@@ -87,7 +87,7 @@
             var onBlurFunc = (function(container){
                 return function(){
                     var multiInput  = $(container).data('plugin_multiInput'),
-                        allInputs   = $(container).find('input')
+                        allInputs   = $(container).find('input'),
                         currentVal  = $.trim($(this).val()),
                         previousVal = $(this).data('mi-value');
 
