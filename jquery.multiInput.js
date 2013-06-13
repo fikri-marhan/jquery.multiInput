@@ -1,17 +1,32 @@
-;(function ( $, window, document, undefined ) {
+/*
+* @plugin jquery.multiInput
+* @author Muhamad Fikri b. Marhan 
+* @email fikri.marhan@gmail.com
+*
+* @github https://github.com/fikri-marhan/jquery.multiInput
+* 
+*/
+; (function ($, window, document, undefined) {
 
     var defaults = {
-            propertyName: 'value',
-            inputAttr: {},
-            multiplyOn: 'blur'
-        };
+        propertyName: 'value',
+        inputAttr: {
+            class: "mi-input"
+        },
+        multiplyOn: 'blur'
+    };
 
-    function MultiInput( element, options ) {
+    function MultiInput(element, options) {
         this.element = element;
-        this.options = $.extend( {}, defaults, options) ;
+        this.options = $.extend({}, defaults, options);
+        
+        //inherit from data attribute
+        var inputCls = $(element).attr("data-inherit-class");
+        if(inputCls !== undefined){
+            this.options.inputAttr["class"] = inputCls;
+        }
 
         this._defaults = defaults;
-
         this.init();
     }
 
@@ -24,7 +39,14 @@
         * @return 
         *     multiInput object
         */
-        init: function() {
+        init: function () {
+            var bindFunc = (function (multiInput) {
+                return function () {
+                    multiInput.bindInput($(this));
+                };
+            } (this));
+
+            $(this.element).find('input').each(bindFunc);
             this.createNewInput();
             return this;
         },
@@ -36,10 +58,10 @@
         * @return jQuery object of the new input
         *
         */
-        createNewInput: function(){
+        createNewInput: function () {
             var input = this.createInput();
             this.bindInput(input);
-            $(this.element).trigger('mi-input-create',[input]);
+            $(this.element).trigger('mi-input-create', [this, input]);
             return input;
         },
 
@@ -50,8 +72,8 @@
         * @return jQuery object of the new input
         *
         */
-        createInput: function(){
-            return $('<input type="text">').attr(this.options.inputAttr).data('mi-value','');
+        createInput: function () {
+            return $('<input type="text">').attr(this.options.inputAttr).data('mi-value', '');
         },
 
         /*
@@ -66,7 +88,7 @@
         *     multiInput object
         *
         */
-        bindInput: function(input) {
+        bindInput: function (input) {
             this.bindListeners(input);
             $(this.element).append(input);
             return this;
@@ -83,31 +105,30 @@
         *     multiInput object
         *
         */
-        bindListeners: function(input){
-            var onBlurFunc = (function(container){
-                return function(){
-                    var multiInput  = $(container).data('plugin_multiInput'),
-                        allInputs   = $(container).find('input'),
-                        currentVal  = $.trim($(this).val()),
+        bindListeners: function (input) {
+            var onBlurFunc = (function (multiInput) {
+                var container = multiInput.element;
+                return function () {
+                    var multiInput = $(container).data('plugin_multiInput'),
+                        allInputs = $(container).find('input'),
+                        currentVal = $.trim($(this).val()),
                         previousVal = $(this).data('mi-value');
 
-                    if(currentVal === ""){
-                        if(this !== allInputs.last().get(0))
-                        {
-                            $(container).trigger('mi-input-removed',[$(this).detach()]);
+                    if (currentVal === "") {
+                        if (this !== allInputs.last().get(0)) {
+                            $(container).trigger('mi-input-removed', [multiInput, $(this).detach()]);
                         }
                     } else {
-                        if(allInputs.last().val() !== "")
-                        {
+                        if (allInputs.last().val() !== "") {
                             multiInput.createNewInput();
                         }
-                        $(this).data('mi-value',currentVal);
-                        $(container).trigger('mi-value-changed',[this,previousVal,currentVal]);
+                        $(this).data('mi-value', currentVal);
+                        $(container).trigger('mi-value-changed', [multiInput, this, previousVal, currentVal]);
                     }
 
                 };
-            }(this.element));
-            input.on(this.options.multiplyOn,onBlurFunc);
+            } (this));
+            input.on(this.options.multiplyOn, onBlurFunc);
 
             return this;
         },
@@ -121,25 +142,23 @@
         *     empty value will be ignored
         *
         */
-        getValues: function(){
-            return $.map($(this.element).find('input'),function(el){
+        getValues: function () {
+            return $.map($(this.element).find('input'), function (el) {
                 var value = $.trim($(el).val());
-                if(value !== ""){
+                if (value !== "") {
                     return value;
                 }
             });
         }
     };
 
-    $.fn.multiInput = function ( options ) {
+    $.fn.multiInput = function (options) {
         return this.each(function () {
             if (!$.data(this, "plugin_multiInput")) {
                 $.data(this, "plugin_multiInput",
-                new MultiInput( this, options ));
+                new MultiInput(this, options));
             }
         });
     };
 
-})( jQuery, window, document );
-
-$("#test").multiInput();
+})(jQuery, window, document);
