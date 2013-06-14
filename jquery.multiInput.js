@@ -6,12 +6,12 @@
 * @github https://github.com/fikri-marhan/jquery.multiInput
 * 
 */
-; (function ($, window, document, undefined) {
+;(function ($, window, document, undefined) {
 
     var defaults = {
         propertyName: 'value',
         inputAttr: {
-            class: "mi-input"
+            "class": "mi-input"
         },
         multiplyOn: 'blur'
     };
