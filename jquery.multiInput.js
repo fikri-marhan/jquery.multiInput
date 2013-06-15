@@ -1,17 +1,17 @@
 /*
-* @plugin jquery.multiInput
-* @author Muhamad Fikri b. Marhan 
-* @email fikri.marhan@gmail.com
-*
-* @github https://github.com/fikri-marhan/jquery.multiInput
-* 
-*/
-;(function ($, window, document, undefined) {
+ * @plugin jquery.multiInput
+ * @author Muhamad Fikri b. Marhan
+ * @email fikri.marhan@gmail.com
+ *
+ * @github https://github.com/fikri-marhan/jquery.multiInput
+ *
+ */
+;(function($, window, document, undefined) {
 
     var defaults = {
         propertyName: 'value',
         inputAttr: {
-            "class": "mi-input"
+            'class': 'mi-input'
         },
         multiplyOn: 'blur'
     };
@@ -19,11 +19,11 @@
     function MultiInput(element, options) {
         this.element = element;
         this.options = $.extend({}, defaults, options);
-        
+
         //inherit from data attribute
-        var inputCls = $(element).attr("data-inherit-class");
-        if(inputCls !== undefined){
-            this.options.inputAttr["class"] = inputCls;
+        var inputCls = $(element).attr('data-inherit-class');
+        if (inputCls !== undefined) {
+            this.options.inputAttr['class'] = inputCls;
         }
 
         this._defaults = defaults;
@@ -33,18 +33,18 @@
     MultiInput.prototype = {
 
         /*
-        * @function init
-        *     initialize multiInputPlugin
-        *
-        * @return 
-        *     multiInput object
-        */
-        init: function () {
-            var bindFunc = (function (multiInput) {
-                return function () {
+         * @function init
+         *     initialize multiInputPlugin
+         *
+         * @return object
+         *     multiInput object
+         */
+        init: function() {
+            var bindFunc = (function(multiInput) {
+                return function() {
                     multiInput.bindInput($(this));
                 };
-            } (this));
+            }(this));
 
             $(this.element).find('input').each(bindFunc);
             this.createNewInput();
@@ -52,13 +52,14 @@
         },
 
         /*
-        * @function createNewInput
-        *     create a new input and binds if to necessary listeners
-        *
-        * @return jQuery object of the new input
-        *
-        */
-        createNewInput: function () {
+         * @function createNewInput
+         *     create a new input and binds if to necessary listeners
+         *
+         * @return object
+         *     jQuery object of the new input
+         *
+         */
+        createNewInput: function() {
             var input = this.createInput();
             this.bindInput(input);
             $(this.element).trigger('mi-input-create', [this, input]);
@@ -66,60 +67,60 @@
         },
 
         /*
-        * @function createInput
-        *     create a new input
-        *
-        * @return jQuery object of the new input
-        *
-        */
-        createInput: function () {
+         * @function createInput
+         *     create a new input
+         *
+         * @return object
+         *     jQuery object of the new input
+         *
+         */
+        createInput: function() {
             return $('<input type="text">').attr(this.options.inputAttr).data('mi-value', '');
         },
 
         /*
-        * @function bindInput
-        *     bind the input with multiInput handlers and 
-        *     append to the multiInput container
-        *
-        * @parameters
-        *     the input element
-        *
-        * @return 
-        *     multiInput object
-        *
-        */
-        bindInput: function (input) {
+         * @function bindInput
+         *     bind the input with multiInput handlers and 
+         *     append to the multiInput container
+         *
+         * @parameters
+         *     the input element
+         *
+         * @return object
+         *     multiInput object
+         *
+         */
+        bindInput: function(input) {
             this.bindListeners(input);
             $(this.element).append(input);
             return this;
         },
 
         /*
-        * @function bindListeners
-        *     bind the input with multiInput handlers 
-        *
-        * @parameters
-        *     the input element
-        *
-        * @return 
-        *     multiInput object
-        *
-        */
-        bindListeners: function (input) {
-            var onBlurFunc = (function (multiInput) {
+         * @function bindListeners
+         *     bind the input with multiInput handlers 
+         *
+         * @parameters
+         *     the input element
+         *
+         * @return object
+         *     multiInput object
+         *
+         */
+        bindListeners: function(input) {
+            var onBlurFunc = (function(multiInput) {
                 var container = multiInput.element;
-                return function () {
-                    var multiInput = $(container).data('plugin_multiInput'),
-                        allInputs = $(container).find('input'),
+                return function() {
+                    var allInputs = $(container).find('input'),
                         currentVal = $.trim($(this).val()),
                         previousVal = $(this).data('mi-value');
 
-                    if (currentVal === "") {
+                    if (currentVal === '') {
                         if (this !== allInputs.last().get(0)) {
                             $(container).trigger('mi-input-removed', [multiInput, $(this).detach()]);
                         }
                     } else {
-                        if (allInputs.last().val() !== "") {
+                        if(allInputs.last().val() !== '') {
                             multiInput.createNewInput();
                         }
                         $(this).data('mi-value', currentVal);
@@ -127,36 +128,51 @@
                     }
 
                 };
-            } (this));
+            }(this));
             input.on(this.options.multiplyOn, onBlurFunc);
 
             return this;
         },
 
         /*
-        * @function getValues
-        *     get all the multiInput value 
-        *
-        * @return 
-        *     Array containing all the input value. 
-        *     empty value will be ignored
-        *
-        */
-        getValues: function () {
-            return $.map($(this.element).find('input'), function (el) {
+         * @function getValues
+         *     get all the multiInput value 
+         *
+         * @return Array
+         *     Array containing all the input value. 
+         *     empty value will be ignored
+         *
+         */
+        getValues: function() {
+            return $.map($(this.element).find('input'), function(el) {
                 var value = $.trim($(el).val());
-                if (value !== "") {
+                if (value !== '') {
                     return value;
                 }
             });
+        },
+
+        /*
+         * @function getInput
+         *     get input at the specified index 
+         *
+         * @parameters
+         *     the index of the input
+         *
+         * @return Element
+         *     input el
+         *
+         */
+        getInput: function(index) {
+            return $(this.element).find('input').get(index);
         }
     };
 
-    $.fn.multiInput = function (options) {
-        return this.each(function () {
+    $.fn.multiInput = function(options) {
+        return this.each(function() {
             if (!$.data(this, "plugin_multiInput")) {
                 $.data(this, "plugin_multiInput",
-                new MultiInput(this, options));
+                    new MultiInput(this, options));
             }
         });
     };
