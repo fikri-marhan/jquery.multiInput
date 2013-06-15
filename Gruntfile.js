@@ -15,14 +15,18 @@ module.exports = function(grunt) {
     jshint: {
       all :['<%= pkg.name %>.js'],
 
+    },
+    jsbeautifier : {
+      files : ['<%= pkg.name %>.js']
     }
   });
 
   // Load the plugin that provides the "uglify" task.
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-jsbeautifier');
 
   // Default task(s).
-  grunt.registerTask('default', ['uglify','jshint']);
+  grunt.registerTask('default', ['jshint','uglify']);
 
 };
