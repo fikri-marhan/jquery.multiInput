@@ -46,8 +46,15 @@
                 };
             }(this));
 
-            $(this.element).find('input').each(bindFunc);
-            this.createNewInput();
+            var input = $(this.element)
+                .find('input')
+                .each(bindFunc)
+                .last();
+
+            if($.trim($(input).val()) !== ""){
+                this.createNewInput();
+            }
+            
             return this;
         },
 
